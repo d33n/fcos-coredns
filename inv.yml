@@ -1,0 +1,6 @@
+all:
+  hosts:
+    pve:
+      ansible_host: <pve_ip>
+      ansible_password: <pve_password>
+      ansible_user: <pve_user>

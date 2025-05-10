@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  gather_facts: True
+
+  tasks:
+    - name: remove vm if it exists
+      import_role:
+        name: proxmox
+        tasks_from: remove_vm.yml
+    - name: download fcos on proxmox
+      include_role:
+        name: download_fcos
+    - name: create ignition
+      include_role:
+        name: ignition
+    - name: deploy vm
+      import_role:
+        name: proxmox
+        tasks_from: provision_vm.yml

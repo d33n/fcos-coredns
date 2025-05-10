@@ -1,0 +1,70 @@
+variant: fcos
+version: 1.5.0
+passwd:
+  users:
+    - name: core
+      uid: 1000
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF6J126DPyIgAGaiAagCNjeT30juXfu1KcGipxZv1WAl daan@ryzen
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      contents:
+        inline: coredns
+    - path: /etc/resolv.conf
+      overwrite: true
+      contents:
+        inline: |
+          nameserver {{container.dns}}
+          search .
+    - path: /etc/systemd/system-preset/20-systemd-resolved-disable.preset
+      contents:
+        inline: |
+          disable systemd-resolved.service
+    - path: /opt/coredns/Corefile
+      contents:
+        local: Corefile
+      mode: 0644
+    - path: /opt/coredns/forward.db
+      contents:
+        local: forward.db
+      mode: 0644
+    - path: /etc/NetworkManager/system-connections/ens2.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=ens18
+          type=ethernet
+          interface-name=ens18
+          [ipv4]
+          address1={{container.ip}}/24,{{container.gateway}}
+          dhcp-hostname=coredns
+          dns={{container.dns}};
+          dns-search=
+          may-fail=false
+          method=manual
+systemd:
+  units:
+    - name: coredns.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=coredns
+        After=network-online.target
+        Wants=network-online.target
+
+        [Service]
+        TimeoutStartSec=0
+        ExecStartPre=-/bin/podman kill coredns
+        ExecStartPre=-/bin/podman rm coredns
+        ExecStartPre=/bin/podman pull docker.io/cloudctl/coredns
+        ExecStart=/bin/podman run --name coredns \
+         --net=host \
+         --privileged \
+         -v /opt/coredns/:/root/:Z \
+        docker.io/cloudctl/coredns -conf /root/Corefile
+
+        [Install]
+        WantedBy=multi-user.target

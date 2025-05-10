@@ -1,0 +1,27 @@
+config:
+
+  domain_name: <domain>
+  upstream_dns1: <upstream_dns1>
+  upstream_dns2: <upstream_dns1>
+proxmox:
+  user: <pve_user>
+  password: <pve_password>
+  node: <pve_name>
+  ip: <pve_ip>
+container:
+  name: coredns
+  ip: <coredns_ip>
+  gateway: <coredns_gateway>
+  dns: <coredns_dns>
+
+a_records:
+  - { name: "coredns", ipaddr: "10.0.0.41" }
+  - { name: "gitlab", ipaddr: "10.0.0.42" }
+  - { name: "pihole", ipaddr: "10.0.0.70" }
+  - { name: "adguard", ipaddr: "10.0.0.71" }
+  - { name: "unifi", ipaddr: "10.0.0.13" }
+  - { name: "plex", ipaddr: "10.0.0.14" }
+  - { name: "k8s", ipaddr: "192.168.1.29" }
+cname_records:
+  - { name: "radarr", alias: "plex" }
+  - { name: "sonarr", alias: "plex" }

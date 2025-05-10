@@ -1,0 +1,35 @@
+---
+- name: get info
+  community.general.proxmox_vm_info:
+    node: "{{ proxmox.node }}"
+    api_user: "{{ proxmox.user }}"
+    api_password: "{{ proxmox.password }}"
+    api_host: "{{ proxmox.ip }}"
+    name: "{{ container.name }}"
+  register: vm_info
+
+- name: stop and remove vm
+  when: vm_info.proxmox_vms | length > 0
+  block:  
+    - name: stop vm
+      proxmox_kvm:
+        node: "{{ proxmox.node }}"
+        api_user: "{{ proxmox.user }}"
+        api_password: "{{ proxmox.password }}"
+        api_host: "{{ proxmox.ip }}"
+        name: "{{ container.name }}"
+        state: stopped
+        force: true
+
+    - name: pause
+      pause:
+        seconds: 30
+
+    - name: remove vm
+      proxmox_kvm:
+        node: "{{ proxmox.node }}"
+        api_user: "{{ proxmox.user }}"
+        api_password: "{{ proxmox.password }}"
+        api_host: "{{ proxmox.ip }}"
+        name: "{{ container.name }}"
+        state: absent

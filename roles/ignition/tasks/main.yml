@@ -1,0 +1,29 @@
+- name: create config file
+  template:
+    src: config.bu.j2
+    dest: files/coredns.bu
+
+- name: "Create Corefile from template"
+  template:
+    src: Corefile.j2
+    dest: files/Corefile
+    mode: 0664
+
+- name: Set dns_serial fact
+  set_fact:
+    dns_serial: "{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}{{ ansible_date_time.hour }}"
+
+- name: "Create forward.db from template"
+  template:
+    src: forward.db.j2
+    dest: files/forward.db
+    mode: 0664
+
+- name: transpile butane config
+  shell: butane -d ./files --pretty --strict < files/coredns.bu > files/coredns.ign
+
+- name: copy the file somewhere
+  copy:
+    src: "{{ playbook_dir }}/files/coredns.ign"
+    dest: /tmp
+  delegate_to: pve

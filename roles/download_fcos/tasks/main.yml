@@ -1,0 +1,16 @@
+- name: download stable stream json
+  get_url:
+    url: https://builds.coreos.fedoraproject.org/streams/stable.json
+    dest: files/stable.json
+
+- name: download image
+  get_url: 
+    url: "{{ lookup('file', '../files/stable.json') | from_json | json_query('architectures.x86_64.artifacts.qemu.formats.\"qcow2.xz\".disk.location') }}"
+    dest: /tmp/fcos.qcow2.xz
+  delegate_to: pve
+  register: image_download
+
+- name: unxz downloaded file  
+  command: unxz -f /tmp/fcos.qcow2.xz
+  delegate_to: pve
+  when: image_download.changed

@@ -1,0 +1,44 @@
+- name: create new vm
+  proxmox_kvm:
+    node: "{{ proxmox.node }}"
+    api_user: "{{ proxmox.user }}"
+    api_password: "{{ proxmox.password }}"
+    api_host: "{{ proxmox.ip }}"
+    name: "{{ container.name }}"
+    memory: 2048
+    cores: 2
+    net:
+      net0: "virtio,bridge=vmbr0"
+    ostype: l26
+    scsihw: virtio-scsi-pci
+    scsi:
+      scsi0: local-lvm:0,import-from=/tmp/fcos.qcow2,format=qcow2
+    update: no
+    agent: enabled=1
+    args: -fw_cfg name=opt/com.coreos/config,file=/tmp/{{container.name}}.ign
+
+- name: pause
+  pause:
+    seconds: 10
+
+- name: start vm
+  proxmox_kvm:
+    node: "{{ proxmox.node }}"
+    api_user: "{{ proxmox.user }}"
+    api_password: "{{ proxmox.password }}"
+    api_host: "{{ proxmox.ip }}"
+    name: "{{ container.name }}"
+    state: started
+
+- name: pause
+  pause:
+    seconds: 10
+
+- name: Delete QEMU parameters
+  proxmox_kvm:
+    api_user: "{{ proxmox.user }}"
+    api_password: "{{ proxmox.password }}"
+    api_host: "{{ proxmox.ip }}"
+    name: "{{ container.name }}"
+    node: "{{ proxmox.node }}"
+    delete: 'args'
