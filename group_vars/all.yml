@@ -12,6 +12,7 @@ container:
   ip: <coredns_ip>
   gateway: <coredns_gateway>
   dns: <coredns_dns>
+  ssh_key: <ssh_key>
 
 a_records:
   - { name: "coredns", ipaddr: "10.0.0.41" }

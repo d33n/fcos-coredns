@@ -9,13 +9,13 @@ $TTL 43200;
                                 )
                         NS      ns1.{{ config.domain_name }}.
 $ORIGIN {{ config.domain_name }}.
-ns1  IN A  {{container.ip}}
+ns1  IN A  {{ container.ip }}
 
 {% for a_record in a_records %}
 {{ a_record.name }}  IN A  {{ a_record.ipaddr }}
 {% endfor %}
 
-{%if cname_records | type_debug != "NoneType" %}
+{% if cname_records | type_debug != "NoneType" %}
 {% for cname in cname_records %}
 {{ cname.name }}  IN CNAME  {{ cname.alias }}
 {% endfor %}

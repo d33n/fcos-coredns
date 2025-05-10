@@ -5,7 +5,7 @@ passwd:
     - name: core
       uid: 1000
       ssh_authorized_keys:
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF6J126DPyIgAGaiAagCNjeT30juXfu1KcGipxZv1WAl daan@ryzen
+        - {{ ssh_key }}
 storage:
   files:
     - path: /etc/hostname
@@ -16,7 +16,7 @@ storage:
       overwrite: true
       contents:
         inline: |
-          nameserver {{container.dns}}
+          nameserver {{ container.dns }}
           search .
     - path: /etc/systemd/system-preset/20-systemd-resolved-disable.preset
       contents:
@@ -39,9 +39,9 @@ storage:
           type=ethernet
           interface-name=ens18
           [ipv4]
-          address1={{container.ip}}/24,{{container.gateway}}
+          address1={{ container.ip }}/24,{{ container.gateway }}
           dhcp-hostname=coredns
-          dns={{container.dns}};
+          dns={{ container.dns }};
           dns-search=
           may-fail=false
           method=manual
