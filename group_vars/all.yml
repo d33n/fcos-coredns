@@ -1,5 +1,4 @@
 config:
-
   domain_name: <domain>
   upstream_dns1: <upstream_dns1>
   upstream_dns2: <upstream_dns1>
